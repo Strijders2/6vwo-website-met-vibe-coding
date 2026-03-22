@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mijn Todo Lijst</title>
+    <title>Mijn Taken & Spelletjes - Agenda</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Quicksand:wght@400;600;700&display=swap">
     <style>
         * {
             margin: 0;
@@ -11,473 +12,2205 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary: #FF6B9D;
+            --secondary: #FEC84D;
+            --accent: #4ECDC4;
+            --purple: #9B59B6;
+            --bg: #FFF8F0;
+            --dark: #2C3E50;
+            --light: #FFFFFF;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Quicksand', sans-serif;
+            background: var(--bg);
+            color: var(--dark);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+        }
+
+        .background-decorations {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .floating-shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.15;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .shape1 {
+            width: 200px;
+            height: 200px;
+            background: var(--primary);
+            top: 10%;
+            left: 5%;
+        }
+
+        .shape2 {
+            width: 150px;
+            height: 150px;
+            background: var(--secondary);
+            top: 60%;
+            right: 10%;
+            animation-delay: 3s;
+        }
+
+        .shape3 {
+            width: 100px;
+            height: 100px;
+            background: var(--accent);
+            bottom: 20%;
+            left: 15%;
+            animation-delay: 6s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(120deg); }
+            66% { transform: translate(-20px, 20px) rotate(240deg); }
         }
 
         .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            padding: 40px;
-            width: 100%;
-            max-width: 500px;
-            animation: slideIn 0.5s ease;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
         }
 
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--purple) 100%);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255,255,255,0.05) 10px,
+                rgba(255,255,255,0.05) 20px
+            );
+            animation: slide 20s linear infinite;
+        }
+
+        @keyframes slide {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
         }
 
         h1 {
-            color: #667eea;
-            text-align: center;
-            margin-bottom: 10px;
+            font-family: 'Press Start 2P', cursive;
+            color: var(--light);
             font-size: 2.5rem;
+            text-shadow: 4px 4px 0 rgba(0,0,0,0.2);
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
         }
 
         .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 0.9rem;
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
         }
 
-        .input-container {
+        .nav-tabs {
             display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-        }
-
-        #taskInput {
-            flex: 1;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: border-color 0.3s ease;
-        }
-
-        #taskInput:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        #addBtn {
-            padding: 15px 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        #addBtn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        #addBtn:active {
-            transform: translateY(0);
-        }
-
-        .stats {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-
-        .stat {
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #667eea;
-        }
-
-        .stat-label {
-            font-size: 0.8rem;
-            color: #666;
-        }
-
-        #todoList {
-            list-style: none;
-        }
-
-        .todo-item {
-            background: #f8f9fa;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
             gap: 15px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 15px 35px;
+            background: var(--light);
+            border: 4px solid var(--dark);
+            border-radius: 15px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
             transition: all 0.3s ease;
+            box-shadow: 6px 6px 0 var(--dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-tab:hover {
+            transform: translate(3px, 3px);
+            box-shadow: 3px 3px 0 var(--dark);
+        }
+
+        .nav-tab.active {
+            background: var(--secondary);
+            transform: translate(3px, 3px);
+            box-shadow: 3px 3px 0 var(--dark);
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
             animation: fadeIn 0.5s ease;
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .todo-item.removing {
-            animation: fadeOut 0.3s ease;
-            opacity: 0;
-            transform: translateX(20px);
+        .card {
+            background: var(--light);
+            border: 4px solid var(--dark);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 8px 8px 0 var(--dark);
         }
 
-        @keyframes fadeOut {
-            to {
-                opacity: 0;
-                transform: translateX(20px);
-            }
+        .btn {
+            padding: 12px 30px;
+            background: var(--accent);
+            border: 3px solid var(--dark);
+            border-radius: 10px;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 4px 4px 0 var(--dark);
+            text-transform: uppercase;
         }
 
-        .todo-item:hover {
-            background: #e9ecef;
-            transform: translateX(5px);
+        .btn:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0 var(--dark);
         }
 
-        .todo-item.completed {
+        .btn-primary {
+            background: var(--primary);
+            color: var(--light);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+        }
+
+        .task-input-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .task-input {
+            flex: 1;
+            min-width: 180px;
+            padding: 15px 20px;
+            border: 3px solid var(--dark);
+            border-radius: 10px;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .agenda-view {
+            background: var(--light);
+            border: 4px solid var(--dark);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 8px 8px 0 var(--dark);
+            margin-bottom: 25px;
+        }
+
+        .agenda-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .agenda-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .month-nav-btn {
+            padding: 10px 20px;
+            background: var(--accent);
+            border: 3px solid var(--dark);
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 4px 4px 0 var(--dark);
+            font-size: 1.2rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        .view-toggle {
+            padding: 8px 16px;
+            background: var(--light);
+            border: 3px solid var(--dark);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        .view-toggle.active {
+            background: var(--secondary);
+        }
+
+        .month-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .week-grid {
+            display: grid;
+            grid-template-columns: 80px repeat(7, 1fr);
+            gap: 0;
+            border: 3px solid var(--dark);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .time-column {
+            background: #f8f9fa;
+            border-right: 3px solid var(--dark);
+        }
+
+        .time-slot {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .day-column {
+            position: relative;
+            border-right: 1px solid #dee2e6;
+        }
+
+        .day-column:last-child {
+            border-right: none;
+        }
+
+        .day-header {
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--dark);
+            color: var(--light);
+            font-weight: 700;
+            border-bottom: 3px solid var(--dark);
+        }
+
+        .day-header.today {
+            background: var(--primary);
+        }
+
+        .day-name {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .day-date {
+            font-size: 1.8rem;
+            margin-top: 5px;
+        }
+
+        .time-cell {
+            height: 60px;
+            border-bottom: 1px solid #dee2e6;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .time-cell:hover {
+            background: rgba(78, 205, 196, 0.1);
+        }
+
+        .agenda-task {
+            position: absolute;
+            left: 2px;
+            right: 2px;
+            background: var(--accent);
+            border: 2px solid var(--dark);
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            cursor: pointer;
+            z-index: 5;
+        }
+
+        .agenda-task:hover {
+            transform: scale(1.02);
+            z-index: 6;
+        }
+
+        .agenda-task.completed {
+            opacity: 0.5;
+            text-decoration: line-through;
+            background: #95a5a6;
+        }
+
+        .agenda-task.no-time {
+            background: var(--secondary);
+        }
+
+        .month-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .month-day-header {
+            text-align: center;
+            font-weight: 700;
+            padding: 12px;
+            background: var(--dark);
+            color: var(--light);
+            border-radius: 8px;
+        }
+
+        .month-day {
+            min-height: 120px;
+            padding: 8px;
+            background: var(--light);
+            border: 3px solid var(--dark);
+            border-radius: 10px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .month-day:hover {
+            transform: translateY(-3px);
+        }
+
+        .month-day.other-month {
+            opacity: 0.3;
+        }
+
+        .month-day.today {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+        }
+
+        .month-day.today .month-day-number {
+            color: var(--light);
+        }
+
+        .month-day.has-tasks {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        }
+
+        .month-day-number {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .month-task-item {
+            background: var(--accent);
+            padding: 3px 6px;
+            margin: 3px 0;
+            border-radius: 4px;
+            border: 2px solid var(--dark);
+            font-size: 0.75rem;
+            font-weight: 600;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .task-count-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: var(--primary);
+            color: var(--light);
+            border-radius: 50%;
+            min-width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border: 2px solid var(--dark);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .task-detail-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--light);
+            border: 4px solid var(--dark);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.3);
+            z-index: 1000;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .task-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .task-detail-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .close-modal {
+            background: var(--primary);
+            color: var(--light);
+            border: 3px solid var(--dark);
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            margin-bottom: 12px;
+            background: #f8f9fa;
+            border: 3px solid var(--dark);
+            border-radius: 12px;
+        }
+
+        .task-item.completed {
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+
+        .task-checkbox {
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+        }
+
+        .task-text {
+            flex: 1;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .task-delete {
+            padding: 8px 15px;
+            background: var(--primary);
+            color: var(--light);
+            border: 2px solid var(--dark);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .wheel-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .wheel {
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            border: 8px solid var(--dark);
+            position: relative;
+            transition: transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+            box-shadow: 0 0 0 12px var(--light), 0 0 0 16px var(--dark);
+            background: conic-gradient(
+                var(--primary) 0deg 72deg,
+                var(--secondary) 72deg 144deg,
+                var(--accent) 144deg 216deg,
+                var(--purple) 216deg 288deg,
+                #FF6B9D 288deg 360deg
+            );
+        }
+
+        .wheel-center {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: var(--dark);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            box-shadow: 0 0 0 8px var(--light);
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 40px solid var(--primary);
+        }
+
+        .wheel-result {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-align: center;
+            min-height: 60px;
+            padding: 20px;
+            background: var(--light);
+            border: 3px solid var(--dark);
+            border-radius: 15px;
+            max-width: 500px;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .game-card {
+            background: var(--light);
+            border: 4px solid var(--dark);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 8px 8px 0 var(--dark);
+            cursor: pointer;
+        }
+
+        .game-card:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 11px 11px 0 var(--dark);
+        }
+
+        .game-card h3 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .game-active {
+            padding: 30px;
+            background: var(--light);
+            border: 4px solid var(--dark);
+            border-radius: 20px;
+            box-shadow: 8px 8px 0 var(--dark);
+        }
+
+        .chessboard {
+            display: grid;
+            grid-template-columns: repeat(8, 60px);
+            grid-template-rows: repeat(8, 60px);
+            border: 4px solid var(--dark);
+            margin: 20px auto;
+            width: fit-content;
+        }
+
+        .chess-square {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            cursor: pointer;
+        }
+
+        .chess-square.light {
+            background: #f0d9b5;
+        }
+
+        .chess-square.dark {
+            background: #b58863;
+        }
+
+        .chess-square.selected {
+            background: #7fc97f !important;
+        }
+
+        .chess-square.valid-move {
+            background: #9fd99f !important;
+        }
+
+        .chess-captured {
+            display: flex;
+            gap: 5px;
+            padding: 10px;
+            background: #f8f9fa;
+            border: 3px solid var(--dark);
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        .chess-turn {
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 700;
+            padding: 15px;
+            background: var(--secondary);
+            border: 3px solid var(--dark);
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            max-width: 500px;
+            margin: 25px auto;
+        }
+
+        .memory-card {
+            aspect-ratio: 1;
+            background: var(--accent);
+            border: 3px solid var(--dark);
+            border-radius: 12px;
+            font-size: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .memory-card.flipped,
+        .memory-card.matched {
+            background: var(--secondary);
+        }
+
+        .memory-card.matched {
             opacity: 0.6;
         }
 
-        .todo-item.completed .todo-text {
-            text-decoration: line-through;
-            color: #999;
+        .snake-canvas {
+            border: 4px solid var(--dark);
+            background: #f0f0f0;
+            display: block;
+            margin: 20px auto;
         }
 
-        .checkbox {
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-            accent-color: #667eea;
+        .game-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border: 3px solid var(--dark);
+            border-radius: 12px;
         }
 
-        .todo-text {
-            flex: 1;
-            font-size: 16px;
-            color: #333;
-            word-break: break-word;
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            font-family: 'Press Start 2P', cursive;
         }
 
-        .delete-btn {
-            background: #ff6b6b;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
-            transition: all 0.2s ease;
-        }
-
-        .delete-btn:hover {
-            background: #ff5252;
-            transform: scale(1.05);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: #999;
-        }
-
-        .empty-state-icon {
-            font-size: 4rem;
-            margin-bottom: 10px;
-        }
-
-        .clear-all-btn {
-            width: 100%;
-            padding: 12px;
-            background: #ff6b6b;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
+        .game-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
             margin-top: 20px;
-            transition: all 0.2s ease;
         }
 
-        .clear-all-btn:hover {
-            background: #ff5252;
-            transform: translateY(-2px);
+        .back-btn {
+            background: #95a5a6;
+            color: var(--light);
         }
 
-        .clear-all-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-            }
-
+        @media (max-width: 768px) {
             h1 {
+                font-size: 1.5rem;
+            }
+
+            .wheel {
+                width: 300px;
+                height: 300px;
+            }
+
+            .chessboard {
+                grid-template-columns: repeat(8, 45px);
+                grid-template-rows: repeat(8, 45px);
+            }
+
+            .chess-square {
+                width: 45px;
+                height: 45px;
                 font-size: 2rem;
-            }
-
-            .input-container {
-                flex-direction: column;
-            }
-
-            #addBtn {
-                width: 100%;
             }
         }
     </style>
 </head>
 <body>
+    <div class="background-decorations">
+        <div class="floating-shape shape1"></div>
+        <div class="floating-shape shape2"></div>
+        <div class="floating-shape shape3"></div>
+    </div>
+
     <div class="container">
-        <h1>📝 Mijn Todo Lijst</h1>
-        <p class="subtitle">Blijf georganiseerd en productief!</p>
+        <header>
+            <h1>🎮 Mijn Taken & Spelletjes</h1>
+            <p class="subtitle">Plan je dag en speel je favoriete games!</p>
+        </header>
 
-        <div class="input-container">
-            <input 
-                type="text" 
-                id="taskInput" 
-                placeholder="Voeg een nieuwe taak toe..."
-                maxlength="200"
-            >
-            <button id="addBtn">Toevoegen</button>
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('tasks')">📋 Agenda</button>
+            <button class="nav-tab" onclick="showSection('wheel')">🎡 Lucky Wheel</button>
+            <button class="nav-tab" onclick="showSection('games')">🎮 Spelletjes</button>
         </div>
 
-        <div class="stats">
-            <div class="stat">
-                <div class="stat-number" id="totalTasks">0</div>
-                <div class="stat-label">Totaal</div>
+        <div id="tasks-section" class="section active">
+            <div class="agenda-view">
+                <div class="agenda-header">
+                    <button class="month-nav-btn" onclick="navigateBack()">◀</button>
+                    <div class="agenda-controls">
+                        <button class="btn btn-secondary" onclick="goToToday()">Vandaag</button>
+                        <button class="view-toggle active" onclick="toggleView('week')" id="weekViewBtn">Week</button>
+                        <button class="view-toggle" onclick="toggleView('month')" id="monthViewBtn">Maand</button>
+                    </div>
+                    <div class="month-title" id="agendaTitle"></div>
+                    <button class="month-nav-btn" onclick="navigateForward()">▶</button>
+                </div>
+
+                <div id="agendaContent"></div>
             </div>
-            <div class="stat">
-                <div class="stat-number" id="activeTasks">0</div>
-                <div class="stat-label">Actief</div>
-            </div>
-            <div class="stat">
-                <div class="stat-number" id="completedTasks">0</div>
-                <div class="stat-label">Voltooid</div>
+
+            <div class="card">
+                <h3 style="margin-bottom: 20px; font-size: 1.3rem; color: var(--primary);">➕ Nieuwe Taak Toevoegen</h3>
+                
+                <div class="task-input-group">
+                    <input type="date" id="taskDate" class="task-input" style="flex: 0 0 180px;" />
+                    <input type="time" id="taskTime" class="task-input" style="flex: 0 0 120px;" placeholder="Tijd (optioneel)" />
+                    <input type="text" id="taskInput" class="task-input" placeholder="Taak beschrijving..." />
+                    <button class="btn btn-primary" onclick="addTask()">Toevoegen</button>
+                </div>
             </div>
         </div>
 
-        <ul id="todoList"></ul>
+        <div id="wheel-section" class="section">
+            <div class="card">
+                <h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: var(--primary);">🎡 Lucky Wheel</h2>
+                <p style="text-align: center; margin-bottom: 30px; font-size: 1.1rem;">
+                    Draai aan het rad en laat het lot een taak voor je kiezen!
+                </p>
 
-        <button id="clearAllBtn" class="clear-all-btn" disabled>
-            Wis Alle Voltooide Taken
-        </button>
+                <div class="wheel-container">
+                    <div style="position: relative;">
+                        <div class="wheel-pointer"></div>
+                        <div class="wheel" id="wheel">
+                            <div class="wheel-center"></div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="spinWheel()" id="spinBtn">Draai het Rad!</button>
+                    <div class="wheel-result" id="wheelResult">Klik op de knop om te draaien!</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="games-section" class="section">
+            <div class="games-grid" id="gamesGrid">
+                <div class="game-card" onclick="startGame('memory')">
+                    <h3>🧠 Memory</h3>
+                    <p>Match de emoji paren!</p>
+                    <button class="btn btn-primary">Spelen</button>
+                </div>
+
+                <div class="game-card" onclick="startGame('snake')">
+                    <h3>🐍 Snake</h3>
+                    <p>Eet de appels en groei!</p>
+                    <button class="btn btn-primary">Spelen</button>
+                </div>
+
+                <div class="game-card" onclick="startGame('reaction')">
+                    <h3>⚡ Reactie Test</h3>
+                    <p>Test je reactiesnelheid!</p>
+                    <button class="btn btn-primary">Spelen</button>
+                </div>
+
+                <div class="game-card" onclick="startGame('chess')">
+                    <h3>♟️ Schaak</h3>
+                    <p>Speel tegen een vriend of bot!</p>
+                    <button class="btn btn-primary">Spelen</button>
+                </div>
+            </div>
+
+            <div id="gameArea" style="display: none;"></div>
+        </div>
     </div>
 
     <script>
-        // Todo App Class
-        class TodoApp {
-            constructor() {
-                this.tasks = this.loadTasks();
-                this.taskInput = document.getElementById('taskInput');
-                this.addBtn = document.getElementById('addBtn');
-                this.todoList = document.getElementById('todoList');
-                this.clearAllBtn = document.getElementById('clearAllBtn');
-                
-                this.init();
+        // Core Variables
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || {};
+        let currentDate = new Date().toISOString().split('T')[0];
+        let currentWeekStart = new Date();
+        let viewMode = 'week';
+
+        // Set to Monday of current week
+        currentWeekStart.setDate(currentWeekStart.getDate() - (currentWeekStart.getDay() || 7) + 1);
+
+        // Initialize
+        function initializeDate() {
+            document.getElementById('taskDate').value = currentDate;
+            renderAgenda();
+            updateViewButtons();
+        }
+
+        function updateViewButtons() {
+            document.getElementById('weekViewBtn').classList.toggle('active', viewMode === 'week');
+            document.getElementById('monthViewBtn').classList.toggle('active', viewMode === 'month');
+        }
+
+        function toggleView(mode) {
+            viewMode = mode;
+            updateViewButtons();
+            renderAgenda();
+        }
+
+        // Task Management
+        function addTask() {
+            const input = document.getElementById('taskInput');
+            const timeInput = document.getElementById('taskTime');
+            const dateInput = document.getElementById('taskDate');
+            const taskText = input.value.trim();
+            const taskDate = dateInput.value;
+            
+            if (taskText === '' || !taskDate) {
+                alert('Vul een taak en datum in!');
+                return;
             }
 
-            // Initialiseer de app
-            init() {
-                this.renderTasks();
-                this.updateStats();
-                this.attachEventListeners();
+            if (!tasks[taskDate]) {
+                tasks[taskDate] = [];
             }
 
-            // Event listeners
-            attachEventListeners() {
-                // Toevoegen via knop
-                this.addBtn.addEventListener('click', () => this.addTask());
-                
-                // Toevoegen via Enter toets
-                this.taskInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        this.addTask();
-                    }
-                });
+            tasks[taskDate].push({
+                text: taskText,
+                time: timeInput.value || null,
+                completed: false,
+                id: Date.now()
+            });
 
-                // Wis alle voltooide taken
-                this.clearAllBtn.addEventListener('click', () => this.clearCompleted());
-            }
+            saveTasks();
+            renderAgenda();
+            input.value = '';
+            timeInput.value = '';
+        }
 
-            // Taak toevoegen
-            addTask() {
-                const taskText = this.taskInput.value.trim();
-                
-                if (taskText === '') {
-                    this.taskInput.focus();
-                    return;
-                }
+        document.getElementById('taskInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') addTask();
+        });
 
-                const task = {
-                    id: Date.now(),
-                    text: taskText,
-                    completed: false,
-                    createdAt: new Date().toISOString()
-                };
-
-                this.tasks.push(task);
-                this.saveTasks();
-                this.renderTasks();
-                this.updateStats();
-                
-                // Clear input en focus
-                this.taskInput.value = '';
-                this.taskInput.focus();
-            }
-
-            // Taak verwijderen
-            deleteTask(id) {
-                const taskElement = document.querySelector(`[data-id="${id}"]`);
-                taskElement.classList.add('removing');
-                
-                setTimeout(() => {
-                    this.tasks = this.tasks.filter(task => task.id !== id);
-                    this.saveTasks();
-                    this.renderTasks();
-                    this.updateStats();
-                }, 300);
-            }
-
-            // Taak togglen (done/undone)
-            toggleTask(id) {
-                const task = this.tasks.find(task => task.id === id);
+        function toggleTask(date, id) {
+            if (tasks[date]) {
+                const task = tasks[date].find(t => t.id === id);
                 if (task) {
                     task.completed = !task.completed;
-                    this.saveTasks();
-                    this.renderTasks();
-                    this.updateStats();
+                    saveTasks();
+                    renderAgenda();
                 }
-            }
-
-            // Wis alle voltooide taken
-            clearCompleted() {
-                const completedTasks = document.querySelectorAll('.todo-item.completed');
-                
-                completedTasks.forEach(task => {
-                    task.classList.add('removing');
-                });
-
-                setTimeout(() => {
-                    this.tasks = this.tasks.filter(task => !task.completed);
-                    this.saveTasks();
-                    this.renderTasks();
-                    this.updateStats();
-                }, 300);
-            }
-
-            // Render alle taken
-            renderTasks() {
-                this.todoList.innerHTML = '';
-
-                if (this.tasks.length === 0) {
-                    this.todoList.innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-state-icon">🎉</div>
-                            <p>Geen taken! Voeg er een toe om te beginnen.</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                this.tasks.forEach(task => {
-                    const li = document.createElement('li');
-                    li.className = `todo-item ${task.completed ? 'completed' : ''}`;
-                    li.setAttribute('data-id', task.id);
-                    
-                    li.innerHTML = `
-                        <input 
-                            type="checkbox" 
-                            class="checkbox" 
-                            ${task.completed ? 'checked' : ''}
-                        >
-                        <span class="todo-text">${this.escapeHtml(task.text)}</span>
-                        <button class="delete-btn">Verwijder</button>
-                    `;
-
-                    // Checkbox event
-                    li.querySelector('.checkbox').addEventListener('change', () => {
-                        this.toggleTask(task.id);
-                    });
-
-                    // Delete button event
-                    li.querySelector('.delete-btn').addEventListener('click', () => {
-                        this.deleteTask(task.id);
-                    });
-
-                    this.todoList.appendChild(li);
-                });
-            }
-
-            // Update statistieken
-            updateStats() {
-                const total = this.tasks.length;
-                const completed = this.tasks.filter(task => task.completed).length;
-                const active = total - completed;
-
-                document.getElementById('totalTasks').textContent = total;
-                document.getElementById('activeTasks').textContent = active;
-                document.getElementById('completedTasks').textContent = completed;
-
-                // Enable/disable clear button
-                this.clearAllBtn.disabled = completed === 0;
-            }
-
-            // Opslaan in localStorage
-            saveTasks() {
-                localStorage.setItem('todoTasks', JSON.stringify(this.tasks));
-            }
-
-            // Laden uit localStorage
-            loadTasks() {
-                const tasks = localStorage.getItem('todoTasks');
-                return tasks ? JSON.parse(tasks) : [];
-            }
-
-            // Escape HTML voor veiligheid
-            escapeHtml(text) {
-                const div = document.createElement('div');
-                div.textContent = text;
-                return div.innerHTML;
             }
         }
 
-        // Start de app
-        const app = new TodoApp();
+        function deleteTask(date, id) {
+            if (tasks[date]) {
+                tasks[date] = tasks[date].filter(t => t.id !== id);
+                if (tasks[date].length === 0) delete tasks[date];
+                saveTasks();
+                renderAgenda();
+            }
+        }
+
+        function saveTasks() {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        // Navigation
+        function goToToday() {
+            currentDate = new Date().toISOString().split('T')[0];
+            currentWeekStart = new Date();
+            currentWeekStart.setDate(currentWeekStart.getDate() - (currentWeekStart.getDay() || 7) + 1);
+            document.getElementById('taskDate').value = currentDate;
+            renderAgenda();
+        }
+
+        function navigateBack() {
+            if (viewMode === 'week') {
+                currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+            } else {
+                const date = new Date(currentWeekStart);
+                date.setMonth(date.getMonth() - 1);
+                currentWeekStart = new Date(date.getFullYear(), date.getMonth(), 1);
+                currentWeekStart.setDate(currentWeekStart.getDate() - (currentWeekStart.getDay() || 7) + 1);
+            }
+            renderAgenda();
+        }
+
+        function navigateForward() {
+            if (viewMode === 'week') {
+                currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+            } else {
+                const date = new Date(currentWeekStart);
+                date.setMonth(date.getMonth() + 1);
+                currentWeekStart = new Date(date.getFullYear(), date.getMonth(), 1);
+                currentWeekStart.setDate(currentWeekStart.getDate() - (currentWeekStart.getDay() || 7) + 1);
+            }
+            renderAgenda();
+        }
+
+        // Rendering
+        function renderAgenda() {
+            if (viewMode === 'week') {
+                renderWeekView();
+            } else {
+                renderMonthView();
+            }
+        }
+
+        function renderWeekView() {
+            const agendaContent = document.getElementById('agendaContent');
+            const days = [];
+            const today = new Date().toISOString().split('T')[0];
+            
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(currentWeekStart);
+                date.setDate(date.getDate() + i);
+                days.push(date);
+            }
+
+            const monthNames = ['Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', 
+                              'Juli', 'Augustus', 'September', 'Oktober', 'November', 'December'];
+            const weekStart = days[0];
+            const weekEnd = days[6];
+            
+            let titleText = '';
+            if (weekStart.getMonth() === weekEnd.getMonth()) {
+                titleText = `${weekStart.getDate()} - ${weekEnd.getDate()} ${monthNames[weekStart.getMonth()]} ${weekStart.getFullYear()}`;
+            } else {
+                titleText = `${weekStart.getDate()} ${monthNames[weekStart.getMonth()]} - ${weekEnd.getDate()} ${monthNames[weekEnd.getMonth()]} ${weekStart.getFullYear()}`;
+            }
+            
+            document.getElementById('agendaTitle').textContent = titleText;
+
+            const dayNames = ['Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za', 'Zo'];
+            
+            let html = '<div class="week-grid">';
+            
+            html += '<div class="time-column"><div class="day-header" style="background: #f8f9fa; color: var(--dark);"></div>';
+            for (let hour = 0; hour < 24; hour++) {
+                html += `<div class="time-slot">${String(hour).padStart(2, '0')}:00</div>`;
+            }
+            html += '</div>';
+
+            days.forEach((date, index) => {
+                const dateStr = date.toISOString().split('T')[0];
+                const isToday = dateStr === today;
+                
+                html += '<div class="day-column">';
+                html += `<div class="day-header ${isToday ? 'today' : ''}">
+                    <div class="day-name">${dayNames[index]}</div>
+                    <div class="day-date">${date.getDate()}</div>
+                </div>`;
+
+                for (let hour = 0; hour < 24; hour++) {
+                    html += `<div class="time-cell" data-date="${dateStr}" data-hour="${hour}"></div>`;
+                }
+                
+                html += '</div>';
+            });
+
+            html += '</div>';
+            agendaContent.innerHTML = html;
+
+            days.forEach(date => {
+                const dateStr = date.toISOString().split('T')[0];
+                const dayTasks = tasks[dateStr] || [];
+                
+                dayTasks.forEach(task => {
+                    if (task.time) {
+                        const [hour, minute] = task.time.split(':').map(Number);
+                        const cell = agendaContent.querySelector(`[data-date="${dateStr}"][data-hour="${hour}"]`);
+                        
+                        if (cell) {
+                            const taskEl = document.createElement('div');
+                            taskEl.className = `agenda-task ${task.completed ? 'completed' : ''}`;
+                            taskEl.style.top = `${(minute / 60) * 60}px`;
+                            taskEl.textContent = `${task.time} ${task.text}`;
+                            taskEl.onclick = (e) => {
+                                e.stopPropagation();
+                                showTaskDetail(dateStr, task.id);
+                            };
+                            cell.appendChild(taskEl);
+                        }
+                    } else {
+                        const cell = agendaContent.querySelector(`[data-date="${dateStr}"][data-hour="0"]`);
+                        if (cell) {
+                            const existingNoTimeTasks = cell.querySelectorAll('.no-time').length;
+                            const taskEl = document.createElement('div');
+                            taskEl.className = `agenda-task no-time ${task.completed ? 'completed' : ''}`;
+                            taskEl.style.top = `${existingNoTimeTasks * 30}px`;
+                            taskEl.textContent = `⏰ ${task.text}`;
+                            taskEl.onclick = (e) => {
+                                e.stopPropagation();
+                                showTaskDetail(dateStr, task.id);
+                            };
+                            cell.appendChild(taskEl);
+                        }
+                    }
+                });
+            });
+
+            const cells = agendaContent.querySelectorAll('.time-cell');
+            cells.forEach(cell => {
+                cell.addEventListener('click', function() {
+                    const dateStr = this.dataset.date;
+                    const hour = this.dataset.hour;
+                    document.getElementById('taskDate').value = dateStr;
+                    document.getElementById('taskTime').value = `${String(hour).padStart(2, '0')}:00`;
+                    document.getElementById('taskInput').focus();
+                });
+            });
+        }
+
+        function renderMonthView() {
+            const agendaContent = document.getElementById('agendaContent');
+            const monthNames = ['Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', 
+                              'Juli', 'Augustus', 'September', 'Oktober', 'November', 'December'];
+            
+            const year = currentWeekStart.getFullYear();
+            const month = currentWeekStart.getMonth();
+            
+            document.getElementById('agendaTitle').textContent = `${monthNames[month]} ${year}`;
+
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const prevLastDay = new Date(year, month, 0);
+            
+            const firstDayOfWeek = (firstDay.getDay() + 6) % 7;
+            const lastDate = lastDay.getDate();
+            const prevLastDate = prevLastDay.getDate();
+
+            const today = new Date().toISOString().split('T')[0];
+
+            let html = '<div class="month-grid">';
+            
+            const dayHeaders = ['Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za', 'Zo'];
+            dayHeaders.forEach(day => {
+                html += `<div class="month-day-header">${day}</div>`;
+            });
+
+            for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+                const day = prevLastDate - i;
+                html += createMonthDayHTML(day, month - 1, year, true, today);
+            }
+
+            for (let day = 1; day <= lastDate; day++) {
+                html += createMonthDayHTML(day, month, year, false, today);
+            }
+
+            const totalCells = firstDayOfWeek + lastDate;
+            const remainingCells = Math.ceil(totalCells / 7) * 7 - totalCells;
+            for (let day = 1; day <= remainingCells; day++) {
+                html += createMonthDayHTML(day, month + 1, year, true, today);
+            }
+
+            html += '</div>';
+            agendaContent.innerHTML = html;
+        }
+
+        function createMonthDayHTML(day, month, year, isOtherMonth, today) {
+            const adjustedMonth = ((month % 12) + 12) % 12;
+            const adjustedYear = month < 0 ? year - 1 : (month > 11 ? year + 1 : year);
+            
+            const dateStr = `${adjustedYear}-${String(adjustedMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const dayTasks = tasks[dateStr] || [];
+            
+            let classes = 'month-day';
+            if (isOtherMonth) classes += ' other-month';
+            if (dateStr === today) classes += ' today';
+            if (dayTasks.length > 0) classes += ' has-tasks';
+
+            let tasksHTML = '';
+            const visibleTasks = dayTasks.slice(0, 3);
+            visibleTasks.forEach(task => {
+                const timeStr = task.time ? `${task.time} ` : '⏰ ';
+                tasksHTML += `<div class="month-task-item">${timeStr}${task.text}</div>`;
+            });
+
+            const taskCountBadge = dayTasks.length > 0 ? 
+                `<div class="task-count-badge">${dayTasks.length}</div>` : '';
+
+            return `
+                <div class="${classes}" onclick="selectMonthDay('${dateStr}')">
+                    <div class="month-day-number">${day}</div>
+                    ${taskCountBadge}
+                    ${tasksHTML}
+                </div>
+            `;
+        }
+
+        function selectMonthDay(dateStr) {
+            document.getElementById('taskDate').value = dateStr;
+            
+            const tasksForDay = tasks[dateStr] || [];
+            if (tasksForDay.length > 0) {
+                showDayTasksModal(dateStr);
+            } else {
+                document.getElementById('taskInput').focus();
+            }
+        }
+
+        function showDayTasksModal(dateStr) {
+            const dayTasks = tasks[dateStr] || [];
+            const date = new Date(dateStr + 'T00:00:00');
+            const dateFormatted = date.toLocaleDateString('nl-NL', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+
+            let tasksHTML = '';
+            dayTasks.forEach(task => {
+                const timeStr = task.time ? `⏰ ${task.time}` : '⏰ Geen tijd';
+                const completedClass = task.completed ? 'completed' : '';
+                tasksHTML += `
+                    <div class="task-item ${completedClass}">
+                        <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} 
+                               onchange="toggleTask('${dateStr}', ${task.id}); renderAgenda();">
+                        <span style="color: var(--accent); font-weight: 700; margin-right: 10px;">${timeStr}</span>
+                        <span class="task-text">${task.text}</span>
+                        <button class="task-delete" onclick="deleteTask('${dateStr}', ${task.id}); closeModal();">🗑️</button>
+                    </div>
+                `;
+            });
+
+            const modalHTML = `
+                <div class="modal-overlay" onclick="closeModal()"></div>
+                <div class="task-detail-modal">
+                    <div class="task-detail-header">
+                        <div class="task-detail-title">${dateFormatted}</div>
+                        <div class="close-modal" onclick="closeModal()">×</div>
+                    </div>
+                    ${tasksHTML}
+                </div>
+            `;
+
+            const modalContainer = document.createElement('div');
+            modalContainer.id = 'modalContainer';
+            modalContainer.innerHTML = modalHTML;
+            document.body.appendChild(modalContainer);
+        }
+
+        function showTaskDetail(dateStr, taskId) {
+            const task = tasks[dateStr]?.find(t => t.id === taskId);
+            if (!task) return;
+
+            const date = new Date(dateStr + 'T00:00:00');
+            const dateFormatted = date.toLocaleDateString('nl-NL', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+
+            const timeStr = task.time ? `⏰ ${task.time}` : '⏰ Geen tijd ingesteld';
+
+            const modalHTML = `
+                <div class="modal-overlay" onclick="closeModal()"></div>
+                <div class="task-detail-modal">
+                    <div class="task-detail-header">
+                        <div class="task-detail-title">Taak Details</div>
+                        <div class="close-modal" onclick="closeModal()">×</div>
+                    </div>
+                    <div style="margin: 20px 0;">
+                        <p style="font-size: 1.2rem; font-weight: 700; margin-bottom: 10px;">${task.text}</p>
+                        <p style="color: #666; margin-bottom: 5px;">📅 ${dateFormatted}</p>
+                        <p style="color: #666; margin-bottom: 15px;">${timeStr}</p>
+                        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
+                            <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} 
+                                   onchange="toggleTask('${dateStr}', ${taskId}); closeModal();">
+                            <span style="font-weight: 600;">${task.completed ? 'Voltooid' : 'Niet voltooid'}</span>
+                        </div>
+                    </div>
+                    <div class="game-controls">
+                        <button class="btn btn-primary" onclick="toggleTask('${dateStr}', ${taskId}); closeModal();">
+                            ${task.completed ? 'Markeer als niet voltooid' : 'Markeer als voltooid'}
+                        </button>
+                        <button class="btn" style="background: var(--primary); color: var(--light);" 
+                                onclick="deleteTask('${dateStr}', ${taskId}); closeModal();">
+                            Verwijderen
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            const modalContainer = document.createElement('div');
+            modalContainer.id = 'modalContainer';
+            modalContainer.innerHTML = modalHTML;
+            document.body.appendChild(modalContainer);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modalContainer');
+            if (modal) modal.remove();
+        }
+
+        // Section Navigation
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            
+            document.getElementById(`${section}-section`).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Lucky Wheel
+        let spinning = false;
+
+        function spinWheel() {
+            if (spinning) return;
+
+            const allTasks = [];
+            Object.keys(tasks).forEach(date => {
+                tasks[date].forEach(task => {
+                    if (!task.completed) {
+                        allTasks.push({ ...task, date });
+                    }
+                });
+            });
+
+            if (allTasks.length === 0) {
+                document.getElementById('wheelResult').textContent = 'Geen onvoltooide taken gevonden! Voeg eerst taken toe. 📝';
+                return;
+            }
+
+            spinning = true;
+            const wheel = document.getElementById('wheel');
+            const spinBtn = document.getElementById('spinBtn');
+            const result = document.getElementById('wheelResult');
+
+            spinBtn.disabled = true;
+            result.textContent = 'Het rad draait...';
+
+            const randomRotation = 1800 + Math.random() * 1800;
+            wheel.style.transform = `rotate(${randomRotation}deg)`;
+
+            setTimeout(() => {
+                const randomTask = allTasks[Math.floor(Math.random() * allTasks.length)];
+                const taskDate = new Date(randomTask.date + 'T00:00:00');
+                const dateStr = taskDate.toLocaleDateString('nl-NL', { day: 'numeric', month: 'long' });
+                const timeStr = randomTask.time ? ` om ${randomTask.time}` : '';
+                
+                result.innerHTML = `
+                    <div>
+                        <strong style="color: var(--primary);">🎯 ${randomTask.text}</strong><br>
+                        <span style="font-size: 1rem; color: #666;">📅 ${dateStr}${timeStr}</span>
+                    </div>
+                `;
+                
+                spinning = false;
+                spinBtn.disabled = false;
+            }, 3000);
+        }
+
+        // Games (simplified versions - Memory, Snake, Reaction, Chess)
+        function startGame(gameName) {
+            document.getElementById('gamesGrid').style.display = 'none';
+            document.getElementById('gameArea').style.display = 'block';
+            
+            if (gameName === 'memory') loadMemoryGame();
+            else if (gameName === 'snake') loadSnakeGame();
+            else if (gameName === 'reaction') loadReactionGame();
+            else if (gameName === 'chess') loadChessGame();
+        }
+
+        function backToGames() {
+            document.getElementById('gamesGrid').style.display = 'grid';
+            document.getElementById('gameArea').style.display = 'none';
+            document.getElementById('gameArea').innerHTML = '';
+        }
+
+        function loadMemoryGame() {
+            // Memory game implementation (simplified for space)
+            const gameArea = document.getElementById('gameArea');
+            gameArea.innerHTML = `
+                <div class="game-active">
+                    <h2 style="text-align: center; color: var(--primary);">🧠 Memory Game</h2>
+                    <div class="game-stats">
+                        <div><div>Zetten</div><div class="stat-value" id="moves">0</div></div>
+                        <div><div>Matches</div><div class="stat-value" id="matches">0/8</div></div>
+                    </div>
+                    <div class="memory-grid" id="memoryGrid"></div>
+                    <div class="game-controls">
+                        <button class="btn btn-secondary" onclick="loadMemoryGame()">Nieuw Spel</button>
+                        <button class="btn back-btn" onclick="backToGames()">Terug</button>
+                    </div>
+                </div>
+            `;
+
+            const emojis = ['🎮', '🎯', '🎨', '🎭', '🎪', '🎸', '🎺', '🎹'];
+            const cards = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
+            let flipped = [];
+            let matched = 0;
+            let moves = 0;
+
+            const grid = document.getElementById('memoryGrid');
+            cards.forEach(emoji => {
+                const card = document.createElement('div');
+                card.className = 'memory-card';
+                card.dataset.emoji = emoji;
+                card.textContent = '❓';
+                card.addEventListener('click', () => {
+                    if (flipped.length === 2 || card.classList.contains('flipped')) return;
+                    
+                    card.classList.add('flipped');
+                    card.textContent = card.dataset.emoji;
+                    flipped.push(card);
+
+                    if (flipped.length === 2) {
+                        moves++;
+                        document.getElementById('moves').textContent = moves;
+
+                        if (flipped[0].dataset.emoji === flipped[1].dataset.emoji) {
+                            flipped[0].classList.add('matched');
+                            flipped[1].classList.add('matched');
+                            matched++;
+                            document.getElementById('matches').textContent = `${matched}/8`;
+                            flipped = [];
+
+                            if (matched === 8) {
+                                setTimeout(() => alert(`🎉 Gewonnen in ${moves} zetten!`), 500);
+                            }
+                        } else {
+                            setTimeout(() => {
+                                flipped[0].classList.remove('flipped');
+                                flipped[1].classList.remove('flipped');
+                                flipped[0].textContent = '❓';
+                                flipped[1].textContent = '❓';
+                                flipped = [];
+                            }, 1000);
+                        }
+                    }
+                });
+                grid.appendChild(card);
+            });
+        }
+
+        function loadSnakeGame() {
+            // Snake game (simplified)
+            const gameArea = document.getElementById('gameArea');
+            gameArea.innerHTML = `
+                <div class="game-active">
+                    <h2 style="text-align: center; color: var(--primary);">🐍 Snake Game</h2>
+                    <div class="game-stats">
+                        <div><div>Score</div><div class="stat-value" id="snakeScore">0</div></div>
+                    </div>
+                    <canvas id="snakeCanvas" class="snake-canvas" width="400" height="400"></canvas>
+                    <p style="text-align: center; margin: 15px 0;">Gebruik pijltjestoetsen</p>
+                    <div class="game-controls">
+                        <button class="btn btn-secondary" onclick="loadSnakeGame()">Nieuw Spel</button>
+                        <button class="btn back-btn" onclick="backToGames()">Terug</button>
+                    </div>
+                </div>
+            `;
+
+            const canvas = document.getElementById('snakeCanvas');
+            const ctx = canvas.getContext('2d');
+            const box = 20;
+            let snake = [{ x: 10 * box, y: 10 * box }];
+            let direction = 'RIGHT';
+            let food = { x: Math.floor(Math.random() * 19 + 1) * box, y: Math.floor(Math.random() * 19 + 1) * box };
+            let score = 0;
+
+            document.addEventListener('keydown', e => {
+                if (e.keyCode === 37 && direction !== 'RIGHT') direction = 'LEFT';
+                else if (e.keyCode === 38 && direction !== 'DOWN') direction = 'UP';
+                else if (e.keyCode === 39 && direction !== 'LEFT') direction = 'RIGHT';
+                else if (e.keyCode === 40 && direction !== 'UP') direction = 'DOWN';
+            });
+
+            const game = setInterval(() => {
+                ctx.fillStyle = '#f0f0f0';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                snake.forEach((seg, i) => {
+                    ctx.fillStyle = i === 0 ? '#4ECDC4' : '#95E1D3';
+                    ctx.fillRect(seg.x, seg.y, box, box);
+                });
+
+                ctx.fillStyle = '#FF6B9D';
+                ctx.fillRect(food.x, food.y, box, box);
+
+                let snakeX = snake[0].x;
+                let snakeY = snake[0].y;
+
+                if (direction === 'LEFT') snakeX -= box;
+                if (direction === 'UP') snakeY -= box;
+                if (direction === 'RIGHT') snakeX += box;
+                if (direction === 'DOWN') snakeY += box;
+
+                if (snakeX === food.x && snakeY === food.y) {
+                    score++;
+                    document.getElementById('snakeScore').textContent = score;
+                    food = { x: Math.floor(Math.random() * 19 + 1) * box, y: Math.floor(Math.random() * 19 + 1) * box };
+                } else {
+                    snake.pop();
+                }
+
+                const newHead = { x: snakeX, y: snakeY };
+
+                if (snakeX < 0 || snakeX >= canvas.width || snakeY < 0 || snakeY >= canvas.height || 
+                    snake.some(seg => seg.x === newHead.x && seg.y === newHead.y)) {
+                    clearInterval(game);
+                    alert(`Game Over! Score: ${score}`);
+                    return;
+                }
+
+                snake.unshift(newHead);
+            }, 100);
+        }
+
+        function loadReactionGame() {
+            // Reaction test (simplified)
+            const gameArea = document.getElementById('gameArea');
+            let bestTime = localStorage.getItem('bestReaction') || '∞';
+
+            gameArea.innerHTML = `
+                <div class="game-active">
+                    <h2 style="text-align: center; color: var(--primary);">⚡ Reactie Test</h2>
+                    <div class="game-stats">
+                        <div><div>Laatste</div><div class="stat-value" id="lastTime">-</div></div>
+                        <div><div>Beste</div><div class="stat-value" id="bestTime">${bestTime}</div></div>
+                    </div>
+                    <div style="text-align: center; margin: 30px 0;">
+                        <div id="reactionBox" style="
+                            width: 500px;
+                            height: 300px;
+                            margin: 0 auto;
+                            background: #e74c3c;
+                            border: 4px solid var(--dark);
+                            border-radius: 15px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 1.5rem;
+                            font-weight: 700;
+                            cursor: pointer;
+                        " onclick="handleReactionClick()">
+                            Klik om te starten
+                        </div>
+                    </div>
+                    <p style="text-align: center; font-weight: 600;">Wacht tot het groen wordt!</p>
+                    <div class="game-controls">
+                        <button class="btn back-btn" onclick="backToGames()">Terug</button>
+                    </div>
+                </div>
+            `;
+
+            let state = 'ready';
+            let startTime = 0;
+
+            window.handleReactionClick = function() {
+                const box = document.getElementById('reactionBox');
+
+                if (state === 'ready') {
+                    state = 'waiting';
+                    box.style.background = '#e74c3c';
+                    box.textContent = 'Wacht...';
+                    
+                    setTimeout(() => {
+                        if (state === 'waiting') {
+                            state = 'go';
+                            box.style.background = '#2ecc71';
+                            box.textContent = 'KLIK NU!';
+                            startTime = Date.now();
+                        }
+                    }, Math.random() * 3000 + 2000);
+                } else if (state === 'waiting') {
+                    state = 'ready';
+                    box.style.background = '#e74c3c';
+                    box.textContent = 'Te vroeg! Probeer opnieuw';
+                } else if (state === 'go') {
+                    const reactionTime = Date.now() - startTime;
+                    document.getElementById('lastTime').textContent = reactionTime + 'ms';
+                    
+                    if (bestTime === '∞' || reactionTime < parseInt(bestTime)) {
+                        bestTime = reactionTime;
+                        localStorage.setItem('bestReaction', bestTime);
+                        document.getElementById('bestTime').textContent = bestTime + 'ms';
+                    }
+
+                    state = 'ready';
+                    box.style.background = '#3498db';
+                    box.textContent = `${reactionTime}ms! Klik om opnieuw te proberen`;
+                }
+            };
+        }
+
+        // Chess Game Variables
+        let chessBoard = [];
+        let selectedPiece = null;
+        let currentPlayer = 'white';
+        let chessMode = null;
+        let capturedPieces = { white: [], black: [] };
+
+        const chessPieces = {
+            white: { king: '♔', queen: '♕', rook: '♖', bishop: '♗', knight: '♘', pawn: '♙' },
+            black: { king: '♚', queen: '♛', rook: '♜', bishop: '♝', knight: '♞', pawn: '♟' }
+        };
+
+        function loadChessGame() {
+            const gameArea = document.getElementById('gameArea');
+            gameArea.innerHTML = `
+                <div class="game-active">
+                    <h2 style="text-align: center; margin-bottom: 20px; color: var(--primary);">♟️ Schaak</h2>
+                    
+                    <div style="display: flex; gap: 20px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap;">
+                        <button class="btn btn-primary" onclick="setChessMode('pvp')">👥 2 Spelers</button>
+                        <button class="btn btn-secondary" onclick="setChessMode('bot')">🤖 Tegen Bot</button>
+                    </div>
+
+                    <div class="chess-turn" id="chessTurn">Selecteer een spelmodus</div>
+
+                    <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; align-items: start;">
+                        <div style="flex-shrink: 0;">
+                            <div style="margin-bottom: 10px;">
+                                <strong>Gevangen door Wit:</strong>
+                                <div class="chess-captured" id="capturedBlack"></div>
+                            </div>
+                            <div id="chessboard" class="chessboard"></div>
+                            <div style="margin-top: 10px;">
+                                <strong>Gevangen door Zwart:</strong>
+                                <div class="chess-captured" id="capturedWhite"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="game-controls">
+                        <button class="btn btn-secondary" onclick="loadChessGame()">Nieuw Spel</button>
+                        <button class="btn back-btn" onclick="backToGames()">Terug</button>
+                    </div>
+                </div>
+            `;
+
+            initChessBoard();
+        }
+
+        function initChessBoard() {
+            chessBoard = [
+                ['♜', '♞', '♝', '♛', '♚', '♝', '♞', '♜'],
+                ['♟', '♟', '♟', '♟', '♟', '♟', '♟', '♟'],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['♙', '♙', '♙', '♙', '♙', '♙', '♙', '♙'],
+                ['♖', '♘', '♗', '♕', '♔', '♗', '♘', '♖']
+            ];
+            selectedPiece = null;
+            currentPlayer = 'white';
+            capturedPieces = { white: [], black: [] };
+            renderChessBoard();
+        }
+
+        function setChessMode(mode) {
+            chessMode = mode;
+            initChessBoard();
+            updateChessTurn();
+        }
+
+        function renderChessBoard() {
+            const board = document.getElementById('chessboard');
+            if (!board) return;
+            
+            board.innerHTML = '';
+
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const square = document.createElement('div');
+                    square.className = `chess-square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
+                    square.dataset.row = row;
+                    square.dataset.col = col;
+                    square.textContent = chessBoard[row][col];
+                    square.onclick = () => handleChessClick(row, col);
+                    board.appendChild(square);
+                }
+            }
+
+            document.getElementById('capturedWhite').innerHTML = capturedPieces.white.map(p => `<span style="font-size: 1.5rem;">${p}</span>`).join('');
+            document.getElementById('capturedBlack').innerHTML = capturedPieces.black.map(p => `<span style="font-size: 1.5rem;">${p}</span>`).join('');
+        }
+
+        function handleChessClick(row, col) {
+            if (!chessMode) {
+                alert('Selecteer eerst een spelmodus!');
+                return;
+            }
+
+            const piece = chessBoard[row][col];
+            const pieceColor = getPieceColor(piece);
+
+            if (selectedPiece) {
+                const [selectedRow, selectedCol] = selectedPiece;
+                const selectedPieceChar = chessBoard[selectedRow][selectedCol];
+
+                // Deselect if clicking same piece
+                if (row === selectedRow && col === selectedCol) {
+                    selectedPiece = null;
+                    renderChessBoard();
+                    return;
+                }
+
+                // Try to make move
+                if (isValidMove(selectedRow, selectedCol, row, col)) {
+                    // Capture piece if present
+                    if (piece) {
+                        const capturedColor = getPieceColor(piece);
+                        capturedPieces[capturedColor].push(piece);
+                        
+                        // Check if king was captured - game over immediately!
+                        if (getPieceType(piece) === 'king') {
+                            chessBoard[row][col] = selectedPieceChar;
+                            chessBoard[selectedRow][selectedCol] = '';
+                            renderChessBoard();
+                            setTimeout(() => {
+                                alert(`🏆 Schaakmat! De Koning is verslagen! ${currentPlayer === 'white' ? 'Wit' : 'Zwart'} wint!`);
+                            }, 300);
+                            return;
+                        }
+                    }
+
+                    // Make the move
+                    chessBoard[row][col] = selectedPieceChar;
+                    chessBoard[selectedRow][selectedCol] = '';
+                    selectedPiece = null;
+
+                    // Switch player
+                    currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
+                    renderChessBoard();
+                    updateChessTurn();
+
+                    // Check for checkmate
+                    if (isCheckmate(currentPlayer)) {
+                        setTimeout(() => {
+                            alert(`🏆 Schaakmat! ${currentPlayer === 'white' ? 'Zwart' : 'Wit'} wint!`);
+                        }, 300);
+                        return;
+                    }
+
+                    // Bot makes move if it's bot mode and black's turn
+                    if (chessMode === 'bot' && currentPlayer === 'black') {
+                        setTimeout(makeBotMove, 500);
+                    }
+                } else {
+                    // Invalid move, deselect
+                    selectedPiece = null;
+                    renderChessBoard();
+                }
+            } else if (pieceColor === currentPlayer) {
+                // Select piece
+                selectedPiece = [row, col];
+                highlightValidMoves(row, col);
+            }
+        }
+
+        function getPieceColor(piece) {
+            if (!piece) return null;
+            const whitePieces = Object.values(chessPieces.white);
+            return whitePieces.includes(piece) ? 'white' : 'black';
+        }
+
+        function getPieceType(piece) {
+            const types = ['king', 'queen', 'rook', 'bishop', 'knight', 'pawn'];
+            for (const type of types) {
+                if (chessPieces.white[type] === piece || chessPieces.black[type] === piece) {
+                    return type;
+                }
+            }
+            return null;
+        }
+
+        function isValidMove(fromRow, fromCol, toRow, toCol) {
+            const piece = chessBoard[fromRow][fromCol];
+            const targetPiece = chessBoard[toRow][toCol];
+            const pieceColor = getPieceColor(piece);
+            const targetColor = getPieceColor(targetPiece);
+
+            // Can't capture own pieces
+            if (targetColor === pieceColor) return false;
+
+            const pieceType = getPieceType(piece);
+            const rowDiff = toRow - fromRow;
+            const colDiff = toCol - fromCol;
+
+            let isBasicMoveValid = false;
+
+            switch (pieceType) {
+                case 'pawn':
+                    const direction = pieceColor === 'white' ? -1 : 1;
+                    const startRow = pieceColor === 'white' ? 6 : 1;
+                    
+                    // Move forward
+                    if (colDiff === 0 && !targetPiece) {
+                        if (rowDiff === direction) isBasicMoveValid = true;
+                        // First move can be 2 squares
+                        if (fromRow === startRow && rowDiff === 2 * direction && !chessBoard[fromRow + direction][fromCol]) {
+                            isBasicMoveValid = true;
+                        }
+                    }
+                    // Capture diagonally
+                    if (Math.abs(colDiff) === 1 && rowDiff === direction && targetPiece) {
+                        isBasicMoveValid = true;
+                    }
+                    break;
+
+                case 'rook':
+                    // Move horizontally or vertically
+                    if (rowDiff !== 0 && colDiff !== 0) {
+                        isBasicMoveValid = false;
+                    } else {
+                        isBasicMoveValid = isPathClear(fromRow, fromCol, toRow, toCol);
+                    }
+                    break;
+
+                case 'knight':
+                    // L-shaped move
+                    isBasicMoveValid = (Math.abs(rowDiff) === 2 && Math.abs(colDiff) === 1) || 
+                                       (Math.abs(rowDiff) === 1 && Math.abs(colDiff) === 2);
+                    break;
+
+                case 'bishop':
+                    // Move diagonally
+                    if (Math.abs(rowDiff) !== Math.abs(colDiff)) {
+                        isBasicMoveValid = false;
+                    } else {
+                        isBasicMoveValid = isPathClear(fromRow, fromCol, toRow, toCol);
+                    }
+                    break;
+
+                case 'queen':
+                    // Move like rook or bishop
+                    if (rowDiff !== 0 && colDiff !== 0 && Math.abs(rowDiff) !== Math.abs(colDiff)) {
+                        isBasicMoveValid = false;
+                    } else {
+                        isBasicMoveValid = isPathClear(fromRow, fromCol, toRow, toCol);
+                    }
+                    break;
+
+                case 'king':
+                    // Move one square in any direction
+                    isBasicMoveValid = Math.abs(rowDiff) <= 1 && Math.abs(colDiff) <= 1;
+                    break;
+
+                default:
+                    isBasicMoveValid = false;
+            }
+
+            if (!isBasicMoveValid) return false;
+
+            // CRITICAL: Check if this move would leave/put the king in check
+            // Simulate the move
+            const originalPiece = chessBoard[toRow][toCol];
+            chessBoard[toRow][toCol] = piece;
+            chessBoard[fromRow][fromCol] = '';
+
+            const wouldBeInCheck = isInCheck(pieceColor);
+
+            // Undo the move
+            chessBoard[fromRow][fromCol] = piece;
+            chessBoard[toRow][toCol] = originalPiece;
+
+            // Move is only valid if it doesn't leave the king in check
+            return !wouldBeInCheck;
+        }
+
+        function isPathClear(fromRow, fromCol, toRow, toCol) {
+            const rowStep = toRow > fromRow ? 1 : (toRow < fromRow ? -1 : 0);
+            const colStep = toCol > fromCol ? 1 : (toCol < fromCol ? -1 : 0);
+
+            let currentRow = fromRow + rowStep;
+            let currentCol = fromCol + colStep;
+
+            while (currentRow !== toRow || currentCol !== toCol) {
+                if (chessBoard[currentRow][currentCol]) return false;
+                currentRow += rowStep;
+                currentCol += colStep;
+            }
+
+            return true;
+        }
+
+        function highlightValidMoves(row, col) {
+            renderChessBoard();
+            
+            const board = document.getElementById('chessboard');
+            const squares = board.querySelectorAll('.chess-square');
+            
+            // Highlight selected piece
+            squares[row * 8 + col].classList.add('selected');
+
+            // Highlight valid moves
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    if (isValidMove(row, col, r, c)) {
+                        squares[r * 8 + c].classList.add('valid-move');
+                    }
+                }
+            }
+        }
+
+        function updateChessTurn() {
+            const turnDisplay = document.getElementById('chessTurn');
+            if (!chessMode) {
+                turnDisplay.textContent = 'Selecteer een spelmodus';
+                turnDisplay.style.background = 'var(--secondary)';
+            } else {
+                const playerText = currentPlayer === 'white' ? 'Wit' : 'Zwart';
+                const modeText = chessMode === 'bot' && currentPlayer === 'black' ? ' (Bot denkt na...)' : '';
+                
+                // Check if current player is in check
+                if (isInCheck(currentPlayer)) {
+                    turnDisplay.textContent = `⚠️ SCHAAK! ${playerText} is aan de beurt${modeText}`;
+                    turnDisplay.style.background = '#e74c3c';
+                    turnDisplay.style.color = 'var(--light)';
+                } else {
+                    turnDisplay.textContent = `${playerText} is aan de beurt${modeText}`;
+                    turnDisplay.style.background = 'var(--secondary)';
+                    turnDisplay.style.color = 'var(--dark)';
+                }
+            }
+        }
+
+        function findKing(color) {
+            const kingPiece = chessPieces[color].king;
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    if (chessBoard[row][col] === kingPiece) {
+                        return [row, col];
+                    }
+                }
+            }
+            return null;
+        }
+
+        function isInCheck(color) {
+            const kingPos = findKing(color);
+            if (!kingPos) return false;
+
+            const [kingRow, kingCol] = kingPos;
+            const oppositeColor = color === 'white' ? 'black' : 'white';
+
+            // Check if any opponent piece can attack the king
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const piece = chessBoard[row][col];
+                    if (getPieceColor(piece) === oppositeColor) {
+                        if (isValidMove(row, col, kingRow, kingCol)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        function isCheckmate(color) {
+            if (!isInCheck(color)) return false;
+
+            // Try all possible moves for the current player
+            for (let fromRow = 0; fromRow < 8; fromRow++) {
+                for (let fromCol = 0; fromCol < 8; fromCol++) {
+                    const piece = chessBoard[fromRow][fromCol];
+                    if (getPieceColor(piece) === color) {
+                        for (let toRow = 0; toRow < 8; toRow++) {
+                            for (let toCol = 0; toCol < 8; toCol++) {
+                                if (isValidMove(fromRow, fromCol, toRow, toCol)) {
+                                    // Try the move
+                                    const originalPiece = chessBoard[toRow][toCol];
+                                    chessBoard[toRow][toCol] = piece;
+                                    chessBoard[fromRow][fromCol] = '';
+
+                                    const stillInCheck = isInCheck(color);
+
+                                    // Undo the move
+                                    chessBoard[fromRow][fromCol] = piece;
+                                    chessBoard[toRow][toCol] = originalPiece;
+
+                                    if (!stillInCheck) {
+                                        return false; // Found a valid move, not checkmate
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return true; // No valid moves found, it's checkmate
+        }
+
+        function makeBotMove() {
+            const blackPieces = [];
+            
+            // Find all black pieces
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const piece = chessBoard[row][col];
+                    if (getPieceColor(piece) === 'black') {
+                        blackPieces.push({ row, col, piece });
+                    }
+                }
+            }
+
+            // Find all valid moves
+            const validMoves = [];
+            for (const piece of blackPieces) {
+                for (let toRow = 0; toRow < 8; toRow++) {
+                    for (let toCol = 0; toCol < 8; toCol++) {
+                        if (isValidMove(piece.row, piece.col, toRow, toCol)) {
+                            const targetPiece = chessBoard[toRow][toCol];
+                            
+                            // Calculate priority
+                            let priority = 1;
+                            
+                            // HIGH PRIORITY: If in check, prioritize moves that get out of check
+                            if (isInCheck('black')) {
+                                priority += 100;
+                            }
+                            
+                            // Prioritize captures
+                            if (targetPiece) {
+                                const targetType = getPieceType(targetPiece);
+                                const pieceValues = {
+                                    pawn: 10,
+                                    knight: 30,
+                                    bishop: 30,
+                                    rook: 50,
+                                    queen: 90,
+                                    king: 1000
+                                };
+                                priority += pieceValues[targetType] || 10;
+                            }
+                            
+                            // Prefer center control
+                            if (toRow >= 3 && toRow <= 4 && toCol >= 3 && toCol <= 4) {
+                                priority += 5;
+                            }
+                            
+                            // Avoid moving into danger (check if piece would be attacked)
+                            const pieceType = getPieceType(piece.piece);
+                            if (pieceType !== 'pawn') {  // Pawns are sacrificial
+                                // Simulate move to check if piece would be in danger
+                                const originalPiece = chessBoard[toRow][toCol];
+                                chessBoard[toRow][toCol] = piece.piece;
+                                chessBoard[piece.row][piece.col] = '';
+                                
+                                // Check if any white piece can attack this position
+                                let inDanger = false;
+                                for (let r = 0; r < 8; r++) {
+                                    for (let c = 0; c < 8; c++) {
+                                        const p = chessBoard[r][c];
+                                        if (getPieceColor(p) === 'white') {
+                                            // Use basic move validation without check testing to avoid infinite loop
+                                            if (canBasicAttack(r, c, toRow, toCol)) {
+                                                inDanger = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if (inDanger) break;
+                                }
+                                
+                                // Undo simulation
+                                chessBoard[piece.row][piece.col] = piece.piece;
+                                chessBoard[toRow][toCol] = originalPiece;
+                                
+                                if (inDanger) {
+                                    priority -= 20;  // Reduce priority for dangerous moves
+                                }
+                            }
+
+                            validMoves.push({ 
+                                from: { row: piece.row, col: piece.col }, 
+                                to: { row: toRow, col: toCol },
+                                priority 
+                            });
+                        }
+                    }
+                }
+            }
+
+            if (validMoves.length > 0) {
+                // Sort by priority and pick from top moves
+                validMoves.sort((a, b) => b.priority - a.priority);
+                const topPriority = validMoves[0].priority;
+                const topMoves = validMoves.filter(m => m.priority >= topPriority - 10);  // Include moves within 10 points of best
+                const move = topMoves[Math.floor(Math.random() * topMoves.length)];
+
+                // Capture piece if present
+                const capturedPiece = chessBoard[move.to.row][move.to.col];
+                if (capturedPiece) {
+                    capturedPieces.white.push(capturedPiece);
+                    
+                    // Check if king was captured - game over!
+                    if (getPieceType(capturedPiece) === 'king') {
+                        chessBoard[move.to.row][move.to.col] = chessBoard[move.from.row][move.from.col];
+                        chessBoard[move.from.row][move.from.col] = '';
+                        renderChessBoard();
+                        setTimeout(() => {
+                            alert('🏆 Schaakmat! De Koning is verslagen! Zwart (Bot) wint!');
+                        }, 300);
+                        return;
+                    }
+                }
+
+                // Make the move
+                chessBoard[move.to.row][move.to.col] = chessBoard[move.from.row][move.from.col];
+                chessBoard[move.from.row][move.from.col] = '';
+
+                currentPlayer = 'white';
+                renderChessBoard();
+                updateChessTurn();
+
+                // Check for checkmate
+                if (isCheckmate(currentPlayer)) {
+                    setTimeout(() => {
+                        alert('🏆 Schaakmat! Zwart (Bot) wint!');
+                    }, 300);
+                }
+            } else {
+                // No valid moves - stalemate or checkmate
+                if (isInCheck('black')) {
+                    alert('🏆 Schaakmat! Wit wint!');
+                } else {
+                    alert('🤝 Pat! Het spel eindigt in remise.');
+                }
+            }
+        }
+
+        // Helper function to check if a piece can attack a position (without check validation)
+        function canBasicAttack(fromRow, fromCol, toRow, toCol) {
+            const piece = chessBoard[fromRow][fromCol];
+            const targetPiece = chessBoard[toRow][toCol];
+            const pieceColor = getPieceColor(piece);
+            const targetColor = getPieceColor(targetPiece);
+
+            if (!piece) return false;
+            if (targetColor === pieceColor) return false;
+
+            const pieceType = getPieceType(piece);
+            const rowDiff = toRow - fromRow;
+            const colDiff = toCol - fromCol;
+
+            switch (pieceType) {
+                case 'pawn':
+                    const direction = pieceColor === 'white' ? -1 : 1;
+                    // Pawns attack diagonally
+                    return Math.abs(colDiff) === 1 && rowDiff === direction;
+
+                case 'rook':
+                    if (rowDiff !== 0 && colDiff !== 0) return false;
+                    return isPathClear(fromRow, fromCol, toRow, toCol);
+
+                case 'knight':
+                    return (Math.abs(rowDiff) === 2 && Math.abs(colDiff) === 1) || 
+                           (Math.abs(rowDiff) === 1 && Math.abs(colDiff) === 2);
+
+                case 'bishop':
+                    if (Math.abs(rowDiff) !== Math.abs(colDiff)) return false;
+                    return isPathClear(fromRow, fromCol, toRow, toCol);
+
+                case 'queen':
+                    if (rowDiff !== 0 && colDiff !== 0 && Math.abs(rowDiff) !== Math.abs(colDiff)) return false;
+                    return isPathClear(fromRow, fromCol, toRow, toCol);
+
+                case 'king':
+                    return Math.abs(rowDiff) <= 1 && Math.abs(colDiff) <= 1;
+
+                default:
+                    return false;
+            }
+        }
+
+        // Initialize
+        initializeDate();
     </script>
 </body>
 </html>
