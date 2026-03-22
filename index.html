@@ -1,15 +1,483 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="nl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
-  <title>Mijn Website</title>
-  <link href="style.css" rel="stylesheet" type="text/css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mijn Todo Lijst</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        #taskInput {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        #taskInput:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        #addBtn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        #addBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        #addBtn:active {
+            transform: translateY(0);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        #todoList {
+            list-style: none;
+        }
+
+        .todo-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .todo-item.removing {
+            animation: fadeOut 0.3s ease;
+            opacity: 0;
+            transform: translateX(20px);
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+        }
+
+        .todo-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .todo-item.completed {
+            opacity: 0.6;
+        }
+
+        .todo-item.completed .todo-text {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .todo-text {
+            flex: 1;
+            font-size: 16px;
+            color: #333;
+            word-break: break-word;
+        }
+
+        .delete-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+
+        .delete-btn:hover {
+            background: #ff5252;
+            transform: scale(1.05);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 10px;
+        }
+
+        .clear-all-btn {
+            width: 100%;
+            padding: 12px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .clear-all-btn:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+        }
+
+        .clear-all-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .input-container {
+                flex-direction: column;
+            }
+
+            #addBtn {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
-
 <body>
-  Mijn favoriete kleur is toch paars
-</body>
+    <div class="container">
+        <h1>📝 Mijn Todo Lijst</h1>
+        <p class="subtitle">Blijf georganiseerd en productief!</p>
 
+        <div class="input-container">
+            <input 
+                type="text" 
+                id="taskInput" 
+                placeholder="Voeg een nieuwe taak toe..."
+                maxlength="200"
+            >
+            <button id="addBtn">Toevoegen</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number" id="totalTasks">0</div>
+                <div class="stat-label">Totaal</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="activeTasks">0</div>
+                <div class="stat-label">Actief</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="completedTasks">0</div>
+                <div class="stat-label">Voltooid</div>
+            </div>
+        </div>
+
+        <ul id="todoList"></ul>
+
+        <button id="clearAllBtn" class="clear-all-btn" disabled>
+            Wis Alle Voltooide Taken
+        </button>
+    </div>
+
+    <script>
+        // Todo App Class
+        class TodoApp {
+            constructor() {
+                this.tasks = this.loadTasks();
+                this.taskInput = document.getElementById('taskInput');
+                this.addBtn = document.getElementById('addBtn');
+                this.todoList = document.getElementById('todoList');
+                this.clearAllBtn = document.getElementById('clearAllBtn');
+                
+                this.init();
+            }
+
+            // Initialiseer de app
+            init() {
+                this.renderTasks();
+                this.updateStats();
+                this.attachEventListeners();
+            }
+
+            // Event listeners
+            attachEventListeners() {
+                // Toevoegen via knop
+                this.addBtn.addEventListener('click', () => this.addTask());
+                
+                // Toevoegen via Enter toets
+                this.taskInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.addTask();
+                    }
+                });
+
+                // Wis alle voltooide taken
+                this.clearAllBtn.addEventListener('click', () => this.clearCompleted());
+            }
+
+            // Taak toevoegen
+            addTask() {
+                const taskText = this.taskInput.value.trim();
+                
+                if (taskText === '') {
+                    this.taskInput.focus();
+                    return;
+                }
+
+                const task = {
+                    id: Date.now(),
+                    text: taskText,
+                    completed: false,
+                    createdAt: new Date().toISOString()
+                };
+
+                this.tasks.push(task);
+                this.saveTasks();
+                this.renderTasks();
+                this.updateStats();
+                
+                // Clear input en focus
+                this.taskInput.value = '';
+                this.taskInput.focus();
+            }
+
+            // Taak verwijderen
+            deleteTask(id) {
+                const taskElement = document.querySelector(`[data-id="${id}"]`);
+                taskElement.classList.add('removing');
+                
+                setTimeout(() => {
+                    this.tasks = this.tasks.filter(task => task.id !== id);
+                    this.saveTasks();
+                    this.renderTasks();
+                    this.updateStats();
+                }, 300);
+            }
+
+            // Taak togglen (done/undone)
+            toggleTask(id) {
+                const task = this.tasks.find(task => task.id === id);
+                if (task) {
+                    task.completed = !task.completed;
+                    this.saveTasks();
+                    this.renderTasks();
+                    this.updateStats();
+                }
+            }
+
+            // Wis alle voltooide taken
+            clearCompleted() {
+                const completedTasks = document.querySelectorAll('.todo-item.completed');
+                
+                completedTasks.forEach(task => {
+                    task.classList.add('removing');
+                });
+
+                setTimeout(() => {
+                    this.tasks = this.tasks.filter(task => !task.completed);
+                    this.saveTasks();
+                    this.renderTasks();
+                    this.updateStats();
+                }, 300);
+            }
+
+            // Render alle taken
+            renderTasks() {
+                this.todoList.innerHTML = '';
+
+                if (this.tasks.length === 0) {
+                    this.todoList.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🎉</div>
+                            <p>Geen taken! Voeg er een toe om te beginnen.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                this.tasks.forEach(task => {
+                    const li = document.createElement('li');
+                    li.className = `todo-item ${task.completed ? 'completed' : ''}`;
+                    li.setAttribute('data-id', task.id);
+                    
+                    li.innerHTML = `
+                        <input 
+                            type="checkbox" 
+                            class="checkbox" 
+                            ${task.completed ? 'checked' : ''}
+                        >
+                        <span class="todo-text">${this.escapeHtml(task.text)}</span>
+                        <button class="delete-btn">Verwijder</button>
+                    `;
+
+                    // Checkbox event
+                    li.querySelector('.checkbox').addEventListener('change', () => {
+                        this.toggleTask(task.id);
+                    });
+
+                    // Delete button event
+                    li.querySelector('.delete-btn').addEventListener('click', () => {
+                        this.deleteTask(task.id);
+                    });
+
+                    this.todoList.appendChild(li);
+                });
+            }
+
+            // Update statistieken
+            updateStats() {
+                const total = this.tasks.length;
+                const completed = this.tasks.filter(task => task.completed).length;
+                const active = total - completed;
+
+                document.getElementById('totalTasks').textContent = total;
+                document.getElementById('activeTasks').textContent = active;
+                document.getElementById('completedTasks').textContent = completed;
+
+                // Enable/disable clear button
+                this.clearAllBtn.disabled = completed === 0;
+            }
+
+            // Opslaan in localStorage
+            saveTasks() {
+                localStorage.setItem('todoTasks', JSON.stringify(this.tasks));
+            }
+
+            // Laden uit localStorage
+            loadTasks() {
+                const tasks = localStorage.getItem('todoTasks');
+                return tasks ? JSON.parse(tasks) : [];
+            }
+
+            // Escape HTML voor veiligheid
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        }
+
+        // Start de app
+        const app = new TodoApp();
+    </script>
+</body>
 </html>
